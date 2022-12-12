@@ -8,23 +8,25 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#define SERV_PORT 20001
-#define BUFSIZE 1024
+//./tcpserver 10050 5 &
+//./tcpclient 127.0.0.1 10050 8
+//#define SERV_PORT 20001
+//#define BUFSIZE 1024
 #define SADDR struct sockaddr
 #define SLEN sizeof(struct sockaddr_in)
 
 int main(int argc, char **argv) {
   int sockfd, n;
+  int BUFSIZE=atoi(argv[3]);
   char sendline[BUFSIZE], recvline[BUFSIZE + 1];
   struct sockaddr_in servaddr;
   struct sockaddr_in cliaddr;
 
-  if (argc != 2) {
+  if (argc != 4) {
     printf("usage: client <IPaddress of server>\n");
     exit(1);
   }
-
+  int SERV_PORT =atoi(argv[2]);
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(SERV_PORT);
@@ -38,7 +40,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  write(1, "Enter string\n", 13);
+  int a = write(1, "Enter string\n", 13);
 
   while ((n = read(0, sendline, BUFSIZE)) > 0) {
     if (sendto(sockfd, sendline, n, 0, (SADDR *)&servaddr, SLEN) == -1) {
@@ -46,12 +48,12 @@ int main(int argc, char **argv) {
       exit(1);
     }
 
-    if (recvfrom(sockfd, recvline, BUFSIZE, 0, NULL, NULL) == -1) {
-      perror("recvfrom problem");
-      exit(1);
-    }
+    //if (recvfrom(sockfd, recvline, BUFSIZE, 0, NULL, NULL) == -1) {
+    //  perror("recvfrom problem");
+    //  exit(1);
+   // }
 
-    printf("REPLY FROM SERVER= %s\n", recvline);
+   // printf("REPLY FROM SERVER= %s\n", recvline);
   }
   close(sockfd);
 }
